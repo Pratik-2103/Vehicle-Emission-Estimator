@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EmissionTrack Pro Max - Full Report</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Outfit',sans-serif}
+body{min-height:100vh;background:radial-gradient(1200px 600px at 20% -10%, #22c55e22, transparent), radial-gradient(1000px 500px at 90% 0%, #ef444422, transparent), #0a0f1c;padding:15px;color:white}
+.app{width:100%;max-width:1250px;margin:0 auto;background:rgba(255,255,255,0.06);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.1);border-radius:28px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,0.5)}
+.nav{display:flex;gap:8px;padding:14px 18px;border-bottom:1px solid #ffffff12;overflow:auto}
+.nav button{padding:9px 16px;border-radius:100px;border:1px solid #ffffff15;background:#111827;color:#9aa4b2;cursor:pointer;white-space:nowrap;font-size:12px;font-weight:600}
+.nav button.active{background:white;color:black;border-color:white}
+.main{display:grid;grid-template-columns:1.1fr 0.9fr;min-height:700px}
+.left{padding:28px;background:linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));overflow:auto}
+.right{padding:20px;background:#0e162b;display:flex;flex-direction:column;gap:14px;overflow:auto}
+.badge{display:inline-flex;background:#22c55e22;border:1px solid #22c55e55;color:#86efac;padding:6px 14px;border-radius:100px;font-size:11px}
+h1{font-size:34px;line-height:1.1;margin:14px 0 8px} h1 span{color:#22c55e}
+.sub{color:#9aa4b2;font-size:13px;margin-bottom:18p`x}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+label{font-size:10px;color:#aab7cc;letter-spacing:1px;text-transform:uppercase}
+.input{margin-top:6px;background:#111827;border:1px solid #1f2937;border-radius:14px;padding:12px;width:100%;color:white;outline:none}
+.input:focus{border-color:#22c55e}
+.btn{margin-top:16px;width:100%;padding:14px;border:none;border-radius:14px;background:linear-gradient(90deg,#22c55e,#16a34a);color:#052e16;font-weight:800;cursor:pointer}
+.price-box{background:linear-gradient(90deg,#111827,#1f2937);border:1px solid #22c55e44;border-radius:14px;padding:10px 14px;display:flex;justify-content:space-between;font-size:12px;margin-top:10px}
+.result-card{background:white;color:#0a0f1c;border-radius:20px;padding:18px}
+.kpis{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:10px}
+.kpi{background:#f8fafc;border-radius:12px;padding:10px;text-align:center}
+.kpi small{display:block;color:#64748b;font-size:10px}.kpi b{font-size:14px}
+.page{display:none}.page.active{display:block}
+.adv-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+.box{background:#111c33;border-radius:16px;padding:14px;border-left:4px solid;font-size:12px;line-height:1.5}
+.box h4{font-size:13px;margin-bottom:6px}.box ul{margin-left:14px;color:#9fb0cc}
+.box.good{border-color:#22c55e}.box.bad{border-color:#ef4444}.box.mid{border-color:#f59e0b}.box.info{border-color:#06b6d4}
+.do-dont{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+.dolist{background:#0f1a2e;border:1px solid #1e2f5a;border-radius:14px;padding:14px;font-size:12px}
+.dolist li{margin:6px 0;margin-left:16px;color:#cbd5e1}
+.tag{padding:3px 8px;border-radius:100px;font-size:10px;font-weight:700;display:inline-block;margin-bottom:6px}
+.tag-green{background:#22c55e22;color:#86efac}.tag-red{background:#ef444422;color:#fca5a5}.tag-yellow{background:#f59e0b22;color:#fcd34d}
+@media(max-width:900px){.main{grid-template-columns:1fr}.adv-grid,.do-dont{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="nav">
+    <button class="active" onclick="switchPage('calc',this)">🧮 Calculator</button>
+    <button onclick="switchPage('adv',this)">✅ Advantages & Disadvantages</button>
+    <button onclick="switchPage('dodont',this)">📋 Do's & Don'ts</button>
+    <button onclick="switchPage('impact',this)">🌍 Specific Impact</button>
+    <button onclick="switchPage('solution',this)">💡 Solutions & Savings</button>
+  </div>
+
+  <div class="main">
+    <div class="left">
+      <!-- CALCULATOR PAGE -->
+      <div id="page-calc" class="page active">
+        <div class="badge">🌿 WITH FUEL PRICE + COST</div>
+        <h1>Vehicle <span>Emission</span> Estimator</h1>
+        <p class="sub">Live fuel price + total cost + consequence.</p>
+        <div class="grid2">
+          <div><label>Vehicle Type</label><select id="vehicle" class="input" onchange="autoMil()"><option value="15">Car - 15 km/l</option><option value="50">Bike - 50 km/l</option><option value="10">SUV - 10 km/l</option><option value="4">Bus - 4 km/l</option><option value="25">Auto - 25 km/l</option></select></div>
+          <div><label>Fuel Type</label><select id="fuel" class="input" onchange="autoPrice()"><option value="2.31" data-price="106.5" data-type="Petrol">Petrol</option><option value="2.68" data-price="92.3" data-type="Diesel">Diesel</option><option value="1.5" data-price="76.5" data-type="CNG">CNG</option><option value="1.51" data-price="75" data-type="LPG">LPG</option><option value="0" data-price="8" data-type="Electric">Electric</option></select></div>
+          <div><label>Distance (km)</label><input id="distance" class="input" type="number" value="100"></div>
+          <div><label>Mileage (km/l)</label><input id="mileage" class="input" type="number" value="15"></div>
+          <div style="grid-column:span 2"><label>Fuel Price (₹ / L or kWh)</label><input id="fuelPrice" class="input" type="number" value="106.5"></div>
+        </div>
+        <div class="price-box"><span>⛽ <b id="showPrice">₹106.5 /L</b></span><span>📍 <b id="perKmCost">₹7.1 /km</b></span><span id="fuelTag" class="tag tag-green">PETROL</span></div>
+        <button class="btn" onclick="calculate()">Calculate Full Report →</button>
+        <canvas id="chart" height="160" style="margin-top:18px"></canvas>
+      </div>
+
+      <!-- ADVANTAGES PAGE -->
+      <div id="page-adv" class="page">
+        <h2 style="font-size:22px">Advantages & Disadvantages - <span id="advFuelName" style="color:#22c55e">Petrol</span></h2>
+        <p class="sub" id="advDesc">Specific analysis for your selected fuel type.</p>
+        <div class="adv-grid" id="advGrid"></div>
+      </div>
+
+      <!-- DO DONT PAGE -->
+      <div id="page-dodont" class="page">
+        <h2 style="font-size:22px">Do's & Don'ts - <span id="ddFuelName" style="color:#22c55e">Petrol Vehicle</span></h2>
+        <p class="sub">Follow this to reduce cost & pollution.</p>
+        <div class="do-dont">
+          <div class="dolist"><span class="tag tag-green">✅ DO's - MUST DO</span><ul id="doList"></ul></div>
+          <div class="dolist"><span class="tag tag-red">❌ DON'Ts - AVOID</span><ul id="dontList"></ul></div>
+        </div>
+        <div class="box info" style="margin-top:12px"><h4>🎯 If you drive <span id="ddKm">100km</span> daily with <span id="ddFuel">Petrol</span></h4><p id="ddSpecific"></p></div>
+      </div>
+
+      <!-- IMPACT PAGE -->
+      <div id="page-impact" class="page">
+        <h2>Specific Impact of <span id="impCo2" style="color:#ef4444">0kg</span> Emission</h2>
+        <div class="adv-grid" style="margin-top:12px">
+          <div class="box bad"><h4>🧊 Climate Impact</h4><p id="c1"></p><ul id="c1list"></ul></div>
+          <div class="box bad"><h4>🫁 Health Impact</h4><p id="c2"></p><ul id="c2list"></ul></div>
+          <div class="box mid"><h4>🌫️ AQI & City Pollution</h4><p id="c3"></p><ul id="c3list"></ul></div>
+          <div class="box good"><h4>💸 Wallet Impact</h4><p id="c4"></p><ul id="c4list"></ul></div>
+        </div>
+      </div>
+
+      <!-- SOLUTION PAGE -->
+      <div id="page-solution" class="page">
+        <h2>💡 Solution & Money Saving</h2>
+        <div class="adv-grid" id="solGrid"></div>
+        <div class="box good" style="margin-top:12px"><h4>🌳 Eco Solution</h4><p id="solutionBox"></p></div>
+      </div>
+    </div>
+
+    <div class="right">
+      <div class="result-card">
+        <small style="color:#64748b">TOTAL CO₂ EMITTED</small>
+        <h2 id="co2" style="font-size:30px">0 kg</h2>
+        <div class="kpis">
+          <div class="kpi"><small>Fuel Burnt</small><b id="fuelUsed">0 L</b></div>
+          <div class="kpi"><small>Total Cost</small><b id="cost" style="color:#16a34a">₹0</b></div>
+          <div class="kpi"><small>Trees Needed</small><b id="trees">0</b></div>
+        </div>
+        <div id="alert" style="display:none;background:linear-gradient(90deg,#ef4444,#dc2626);color:white;border-radius:12px;padding:10px;font-size:11px;margin-top:10px"></div>
+      </div>
+
+      <div style="background:#0a0f1c;border:1px solid #1e2f5a;border-radius:20px;padding:16px">
+        <h3 style="font-size:13px">📌 Quick Summary</h3>
+        <div id="quickSummary" style="font-size:11px;color:#9fb0cc;margin-top:8px;line-height:1.5">Enter distance to see specific summary...</div>
+      </div>
+
+      <div style="background:#111c33;border-radius:16px;padding:14px;border-left:4px solid #22c55e">
+        <small style="color:#86efac">LIVE STATUS</small>
+        <div style="font-size:12px;margin-top:4px" id="liveStatus">🟢 Calculator Ready</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let myChart, curData={};
+function autoMil(){document.getElementById('mileage').value=document.getElementById('vehicle').value;calculate()}
+function autoPrice(){let sel=document.getElementById('fuel');document.getElementById('fuelPrice').value=sel.options[sel.selectedIndex].dataset.price;calculate()}
+function switchPage(id,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function calculate(){
+  let sel=document.getElementById('fuel');
+  let factor=parseFloat(sel.value), fType=sel.options[sel.selectedIndex].dataset.type;
+  let dist=parseFloat(document.getElementById('distance').value)||0;
+  let mil=parseFloat(document.getElementById('mileage').value)||1;
+  let price=parseFloat(document.getElementById('fuelPrice').value)||0;
+  let isEV=factor==0;
+  let fuelUsed=isEV?dist/7:dist/mil;
+  let co2=isEV?fuelUsed*0.82:fuelUsed*factor;
+  let cost=fuelUsed*price, perKm=cost/dist, trees=Math.ceil(co2/22);
+  curData={factor,fType,dist,mil,price,isEV,fuelUsed,co2,cost,perKm,trees};
+
+  document.getElementById('co2').innerText=co2.toFixed(2)+' kg CO₂';
+  document.getElementById('fuelUsed').innerText=fuelUsed.toFixed(2)+(isEV?' kWh':' L');
+  document.getElementById('cost').innerText='₹'+cost.toFixed(2);
+  document.getElementById('trees').innerText=trees;
+  document.getElementById('showPrice').innerText='₹'+price+(isEV?' /kWh':' /L');
+  document.getElementById('perKmCost').innerText='₹'+perKm.toFixed(2)+' /km';
+  document.getElementById('fuelTag').innerText=fType.toUpperCase();
+  document.getElementById('advFuelName').innerText=fType; document.getElementById('ddFuelName').innerText=fType+" Vehicle"; document.getElementById('ddFuel').innerText=fType;
+  document.getElementById('ddKm').innerText=dist+"km"; document.getElementById('impCo2').innerText=co2.toFixed(1)+"kg";
+
+  // Impact
+  document.getElementById('c1').innerText=`${co2.toFixed(1)}kg CO₂ melts ${ (co2*3).toFixed(1)}kg ice & stays 100 years.`;
+  document.getElementById('c1list').innerHTML=`<li>Global warming +${(co2*0.0001).toFixed(4)}°C local</li><li>= ${ (co2*0.05).toFixed(1)}% of annual car limit</li>`;
+  document.getElementById('c2').innerText=`= ${ (co2*0.6).toFixed(0)} cigarettes, ${ (fuelUsed*2.5).toFixed(0)}g PM2.5`;
+  document.getElementById('c2list').innerHTML=`<li>Lung capacity reduces by ${(fuelUsed*0.02).toFixed(2)}%</li><li>Child asthma risk +${(co2*0.1).toFixed(1)}%</li>`;
+  document.getElementById('c3').innerText=`${ (fuelUsed*12).toFixed(0)}g CO + ${ (fuelUsed*8).toFixed(0)}g NOx`;
+  document.getElementById('c3list').innerHTML=`<li>AQI increases by +${(fuelUsed*0.2).toFixed(1)} in 1km area</li><li>Smog formation time: ${(fuelUsed*0.5).toFixed(0)} mins</li>`;
+  document.getElementById('c4').innerText=`Daily ${dist}km = ₹${(cost*30).toFixed(0)}/month`;
+  document.getElementById('c4list').innerHTML=`<li>Yearly: ₹${(cost*365).toFixed(0)}</li><li>Per km: ₹${perKm.toFixed(2)} - ${perKm>8?'Very Expensive':'Moderate'}</li>`;
+
+  // Advantages / Disadvantages logic per fuel
+  let advData={
+    Petrol:{adv:["High power & pickup","Easy available everywhere","Low maintenance vs Diesel"],dis:["Most expensive (₹106/L)","High CO₂ 2.31kg/L","High pollution - AQI damage"],def:"Petrol gives power but burns your wallet & health."},
+    Diesel:{adv:["High mileage, more torque","Cheaper than Petrol per km for SUV","Long engine life"],dis:["NOx & PM2.5 highest - cancer risk","2.68kg CO₂ highest","Banned in many cities after 10 years"],def:"Diesel is powerful but most polluting fuel."},
+    CNG:{adv:["50% cheaper than Petrol","1.5kg CO₂ - low emission","Govt subsidy"],dis:["Low pickup & power","CNG pump less available","Cylinder risk if not maintained"],def:"CNG is budget & eco friendly but low power."},
+    LPG:{adv:["Clean burning","Cheaper than Petrol","Good for Auto"],dis:["Less mileage","Storage risk","1.51kg CO₂"],def:"LPG is middle option between cost & pollution."},
+    Electric:{adv:["Zero tailpipe pollution","₹1.1/km only - cheapest","No engine maintenance"],dis:["High buying cost","Charging infra less in village","Battery replacement cost"],def:"EV is best for future - zero pollution, lowest cost."}
+  };
+  let d=advData[fType];
+  document.getElementById('advDesc').innerText=d.def;
+  document.getElementById('advGrid').innerHTML=`
+    <div class="box good"><h4>✅ Advantages of ${fType}</h4><ul>${d.adv.map(a=>`<li>${a}</li>`).join('')}<li><b>Specific:</b> For ${dist}km you save ${isEV?`₹${(dist*7-cost).toFixed(0)} vs Petrol`:`${fType=='CNG'?'40% money vs Petrol':''}`}</li></ul></div>
+    <div class="box bad"><h4>❌ Disadvantages of ${fType}</h4><ul>${d.dis.map(a=>`<li>${a}</li>`).join('')}<li><b>Specific:</b> ${co2.toFixed(1)}kg CO₂ in just ${dist}km = ${trees} trees needed</li></ul></div>
+    <div class="box mid"><h4>⚠️ Environmental Disadvantage</h4><p>Your trip emitted ${co2.toFixed(1)}kg CO₂ = ${(co2*1000/22).toFixed(0)} balloons of CO₂. It will stay 100 years in atmosphere. Pichopa Kalan AQI will increase by ${(fuelUsed*0.1).toFixed(2)}.</p></div>
+    <div class="box info"><h4>💰 Financial Disadvantage</h4><p>Monthly (30 days ${dist}km): <b>₹${(cost*30).toFixed(0)}</b><br>Yearly: <b>₹${(cost*365).toFixed(0)}</b><br>5 Year: <b>₹${(cost*365*5).toFixed(0)}</b> - you can buy a bike!</p></div>
+  `;
+
+  // Do Dont
+  let doList=[], dontList=[];
+  if(fType=='Petrol'){doList=["Keep tyre pressure 32 PSI - save 5% fuel","Service every 5000km - reduce emission","Use 5th gear after 50kmph","Car pooling if >2 person"];dontList=["Don't idle engine >1 min - burns 0.1L","Don't rash drive - increases fuel 20%","Don't overload car - mileage drops 15%","Don't use AC at low speed"];}
+  else if(fType=='Diesel'){doList=["Use BS6 Diesel only","Change oil every 6000km","Drive at 60-70 constant","Use DPF cleaner"];dontList=["Don't use old Diesel in winter","Don't ignore black smoke","Don't drive in 1st gear long","Don't park in closed area while ON"];}
+  else if(fType=='CNG'){doList=["Check cylinder leak every 6 months","Start on Petrol then shift to CNG","Keep 1/4 Petrol always","Service CNG kit yearly"];dontList=["Don't fill beyond auto-cut","Don't smoke near cylinder","Don't ignore smell - leak risk","Don't park in sun long time"];}
+  else if(isEV){doList=["Charge at 20-80% for battery life","Use regen braking always","Pre-cool car while charging","Use Eco mode in city"];dontList=["Don't fast charge daily - degrades battery","Don't drain to 0%","Don't charge in extreme heat","Don't ignore battery temp warning"];}
+  else{doList=["Check valve regularly","Keep engine tuned","Use branded LPG","Ventilate after filling"];dontList=["Don't overfill","Don't use near flame","Don't ignore rubber pipe crack","Don't drive with leak sound"];}
+  document.getElementById('doList').innerHTML=doList.map(x=>`<li>${x}</li>`).join(''); document.getElementById('dontList').innerHTML=dontList.map(x=>`<li>${x}</li>`).join('');
+  document.getElementById('ddSpecific').innerText=`If you drive ${dist}km daily with ${fType}, you emit ${co2.toFixed(1)}kg CO₂ daily = ${(co2*30).toFixed(1)}kg monthly. That's equal to burning ${(fuelUsed*30).toFixed(1)}L fuel monthly. To avoid this, ${isEV?'keep EV habits':'switch to CNG or EV, save ₹'+(cost*30*0.6).toFixed(0)+'/month.'}`;
+
+  // Solutions
+  document.getElementById('solGrid').innerHTML=`
+    <div class="box good"><h4>💡 Best Solution for ${fType}</h4><p>${isEV?'Already best! Keep charging habits':`Switch to EV: Save ₹${(cost*0.85).toFixed(0)} per trip. Your ${dist}km trip in EV costs ₹${(dist*1.14).toFixed(0)} only vs ₹${cost.toFixed(0)}.`}</p></div>
+    <div class="box info"><h4>🚲 Immediate Action</h4><p>Car pool 2 days/week = save ₹${(cost*0.28*30).toFixed(0)}/month & ${(co2*0.28*30).toFixed(1)}kg CO₂. Cycle for <5km = zero emission.</p></div>
+  `;
+  document.getElementById('solutionBox').innerHTML=`For this trip: Plant <b>${trees} trees</b> to offset. Each tree absorbs 22kg/year. Use public transport 1 day = save ₹${cost.toFixed(0)}. ${isEV?`EV already saves ${(dist*2).toFixed(0)}kg CO₂ vs Petrol car.`:`If all Pichopa Kalan (pop 5000) does this daily, we save ${(co2*5000).toFixed(0)}kg CO₂ daily = ${(co2*5000/1000).toFixed(1)} tons!`}`;
+  document.getElementById('quickSummary').innerHTML=`<b>${fType}</b> • ${dist}km = <b>₹${cost.toFixed(0)}</b> & <b>${co2.toFixed(1)}kg CO₂</b><br>Per month: ₹${(cost*30).toFixed(0)} • ${ (co2*30).toFixed(1)}kg CO₂<br><b style="color:${trees>5?'#ef4444':'#22c55e'}">${trees>5?'⚠️ High Emission - Action needed':'✅ Low Emission'}</b>`;
+  document.getElementById('liveStatus').innerText=`${fType} • ${dist}km • ₹${perKm.toFixed(2)}/km • ${co2.toFixed(1)}kg CO₂`;
+
+  let alert=document.getElementById('alert');
+  if(cost>1000){alert.style.display='block';alert.innerText=`💸 EXPENSIVE: ₹${cost.toFixed(0)} in one trip! EV would cost ₹${(dist*1.14).toFixed(0)} only.`;}else alert.style.display='none';
+
+  const ctx=document.getElementById('chart').getContext('2d'); if(myChart) myChart.destroy();
+  myChart=new Chart(ctx,{type:'bar',data:{labels:['Cost ₹','CO₂ kg','Trees','Fuel'],datasets:[{data:[cost,co2,trees,fuelUsed],backgroundColor:['#22c55e','#ef4444','#f59e0b','#06b6d4'],borderRadius:8}]},options:{plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{color:'#9aa4b2'}},y:{grid:{color:'#1f2937'},ticks:{color:'#9aa4b2'}}}}});
+}
+autoPrice(); calculate();
+['distance','mileage','fuelPrice'].forEach(id=>document.getElementById(id).addEventListener('input',calculate));
+</script>
+</body>
+</html>
